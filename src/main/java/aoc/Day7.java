@@ -58,7 +58,7 @@ public class Day7 {
 
             while (stepOpt.isPresent() && workers > 0) {
                 String step = stepOpt.get();
-                
+
                 ongoing.put(step, time(step) + time);
                 steps.remove(step);
                 workers--;
@@ -78,9 +78,11 @@ public class Day7 {
             time = lowest;
             workers += finished.size();
         }
+        if(!ongoing.isEmpty()) {
+            time = ongoing.values().stream().mapToInt(v -> v).max().getAsInt();
+        }
 
         System.err.println("time: " + time);
-
     }
 }
 
