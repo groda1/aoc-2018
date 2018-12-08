@@ -78,7 +78,7 @@ public class Day7 {
             time = lowest;
             workers += finished.size();
         }
-        if(!ongoing.isEmpty()) {
+        if (!ongoing.isEmpty()) {
             time = ongoing.values().stream().mapToInt(v -> v).max().getAsInt();
         }
 
