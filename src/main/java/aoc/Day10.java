@@ -1,18 +1,13 @@
 package aoc;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import sun.jvm.hotspot.runtime.ppc.PPCCurrentFrameGuess;
-
 public class Day10 {
-
-    final static String regex = "< *(-?\\d+), *(-?\\d+)>";
-
-    final static Pattern pattern = Pattern.compile(regex);
+    private final static String regex = "< *(-?\\d+), *(-?\\d+)>";
+    private final static Pattern pattern = Pattern.compile(regex);
 
     private static Point parse(String s) {
         Matcher matcher = pattern.matcher(s);
@@ -52,7 +47,7 @@ public class Day10 {
             for (int i = min_x; i <= max_x; i++) {
                 int finalI = i;
                 int finalJ = j;
-                if (points.stream().filter(p -> p.x == finalI && p.y == finalJ).count() > 0) {
+                if (points.stream().anyMatch(p -> p.x == finalI && p.y == finalJ)) {
                     System.err.print("#");
                 } else {
                     System.err.print(" ");
@@ -64,7 +59,6 @@ public class Day10 {
 
     public static void main(String[] args) {
         List<String> input = FileReader.readAsString("aoc/src/main/resources/day10.txt");
-
         List<Point> points = input.stream().map(Day10::parse).collect(Collectors.toList());
 
         long min_size = Long.MAX_VALUE;
@@ -85,9 +79,7 @@ public class Day10 {
                 print(points);
             }
         }
-
         System.err.println("size: " + min_size + " " + index);
-
     }
 
     private static class Point {
