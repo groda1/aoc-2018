@@ -23,7 +23,7 @@ public class Day11 {
             }
         }
 
-        for (int k = 2; k <= 300; k++) {
+        for (int k = 2; k <= SIZE; k++) {
             for (int i = 1; i <= SIZE - k + 1; i++) {
                 for (int j = 1; j <= SIZE - k + 1; j++) {
 
