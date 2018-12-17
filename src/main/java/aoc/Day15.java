@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +19,13 @@ public class Day15 {
     private static final int BLOCKED = -2;
     private static final int UNVISITED = -1;
 
-    private static int ELF_DEEPS = 3;
+    private static int ELF_DEEPS = 34;
+
+    private static int distance(Point start, Point target) {
+
+        return distanceSearch(start, target).values().stream().mapToInt(v -> v + 1).min()
+            .orElse(Integer.MAX_VALUE);
+    }
 
     private static Map<Point, Integer> distanceSearch(Point start, Point target) {
         LinkedList<Point> visitQueue = new LinkedList<>();
@@ -65,13 +71,6 @@ public class Day15 {
                 visitQueue.add(p.down());
             }
         }
-        //
-        //        for (int j = 0; j < height; j++) {
-        //            for (int i = 0; i < width; i++) {
-        //                System.err.print(distGrid[i][j] + " ");
-        //            }
-        //            System.err.println();
-        //        }
 
         Map<Point, Integer> distanceMap = new HashMap<>();
 
@@ -206,7 +205,7 @@ public class Day15 {
     }
 
     private static void print(int round) {
-        System.err.println("Round " + round);
+        System.err.println("After round " + round);
         for (int y = 0; y < height; y++) {
             int finalY = y;
             for (int x = 0; x < width; x++) {
@@ -221,7 +220,7 @@ public class Day15 {
 
             units.stream().filter(u -> u.p.y == finalY)
                 .sorted(Comparator.comparing(u -> u.p.readingOrder())).forEach(u -> {
-                System.err.print(String.format(" (%c %d)", u.type.val, u.hp, u.p.x, u.p.y));
+                System.err.print(String.format(" (%c %d)", u.type.val, u.hp));
             });
 
             System.err.println();
@@ -246,7 +245,6 @@ public class Day15 {
         List<Unit> orderedUnits =
             units.stream().sorted(Comparator.comparing(u -> u.p.readingOrder()))
                 .collect(Collectors.toList());
-
         int i = 0;
         for (Unit unit : orderedUnits) {
 
@@ -267,47 +265,52 @@ public class Day15 {
                         .flatMap(Collection::stream).filter(Day15::validPoint)
                         .collect(Collectors.toSet());
 
-                Map<Point, Integer> distanceMap =
-                    targets.stream().map(t -> distanceSearch(unit.p, t).entrySet())
-                        .flatMap(Collection::stream).collect(
-                        Collectors.toMap(Entry::getKey, Entry::getValue, Integer::min));
+                if (targets.size() > 0) {
+                    int min =
+                        targets.stream().mapToInt(target -> distance(unit.p, target)).min()
+                            .getAsInt();
+                    if (min < Integer.MAX_VALUE) {
+                        Point chosenTarget =
+                            targets.stream().filter(target -> distance(unit.p, target) == min)
+                                .sorted(Comparator.comparing(p -> p.readingOrder())).findFirst()
+                                .get();
 
-                if (distanceMap.size() > 0) {
-                    Integer minDist =
-                        distanceMap.values().stream().mapToInt(p -> p).min().getAsInt();
-                    Point p =
-                        distanceMap.entrySet().stream().filter(e -> e.getValue().equals(minDist))
-                            .sorted(Comparator.comparing(e -> e.getKey().readingOrder()))
-                            .findFirst().get()
-                            .getKey();
+                        Map<Point, Integer> distanceMap = distanceSearch(unit.p, chosenTarget);
 
-                    System.err.println("Moving " + unit.p + " -> " + p);
+                        if (distanceMap.size() > 0) {
+                            Integer minDist =
+                                distanceMap.values().stream().mapToInt(p -> p).min().getAsInt();
+                            Point p =
+                                distanceMap.entrySet().stream()
+                                    .filter(e -> e.getValue().equals(minDist))
+                                    .sorted(Comparator.comparing(e -> e.getKey().readingOrder()))
+                                    .findFirst().get()
+                                    .getKey();
 
-                    unit.p = p;
 
-                    //                    distanceMap.entrySet().forEach(
-                    //                        p -> System.err.println(p.getKey().x + ", " + p.getKey().y + " = " + p.getValue()));
-
+                            System.err.println("Moving " + unit.p + " -> " + p);
+                            unit.p = p;
+                        }
+                    }
                 }
             }
 
             // Attack
-            Optional<Unit> enemy =
-                adjacentEnemies(unit).stream().sorted(Comparator.comparing(u -> u.hp))
-                    .findFirst();
-            if (enemy.isPresent()) {
-                enemy.get().hit();
-                if (enemy.get().hp <= 0) {
-                    units.remove(enemy.get());
+            OptionalInt minEnemyHp =
+                adjacentEnemies(unit).stream().mapToInt(u -> u.hp).min();
+            if(minEnemyHp.isPresent()) {
+                Unit enemy =
+                    adjacentEnemies(unit).stream().filter(u -> u.hp == minEnemyHp.getAsInt())
+                        .min(Comparator.comparing(u -> u.p.readingOrder())).get();
+                enemy.hit();
+                if (enemy.hp <= 0) {
+                    boolean b = units.remove(enemy);
                 }
             }
+
         }
 
-        if (i == (orderedUnits.size())) {
-            return true;
-        } else {
-            return false;
-        }
+        return i == (orderedUnits.size());
 
     }
 
@@ -344,21 +347,23 @@ public class Day15 {
             y++;
         }
 
+        print(0);
         System.err
             .println("Elves before: " + units.stream().filter(u -> u.type == Type.ELF).count());
 
         int round = 0;
         while (true) {
-            print(round);
+
             if (tick()) {
                 round++;
-            } else {
+            }
+
+            print(round);
+            if (units.size() == 0 || targetsLeft(units.get(0)) == 0) {
                 break;
             }
-            //            print(round);
-        }
-        //        print();
 
+        }
         int sum = units.stream().mapToInt(u -> u.hp).sum();
         System.err.println(round + " * " + sum + " = " + round * sum);
         System.err
