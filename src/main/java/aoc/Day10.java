@@ -5,6 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import aoc.Utils.FileReader;
+
 public class Day10 {
     private final static String regex = "< *(-?\\d+), *(-?\\d+)>";
     private final static Pattern pattern = Pattern.compile(regex);

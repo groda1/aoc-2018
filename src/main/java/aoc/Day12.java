@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import aoc.Utils.FileReader;
+
 public class Day12 {
 
     private static String state;

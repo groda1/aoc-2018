@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import aoc.Utils.FileReader;
+
 public class Day7 {
     static HashMap<String, List<String>> steps = new HashMap<>();
     static Set<String> taken = new HashSet<>();

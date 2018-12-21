@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import aoc.Utils.FileReader;
+
 public class Day8 {
 
     private static class Node {

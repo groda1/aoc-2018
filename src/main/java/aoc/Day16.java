@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import aoc.Utils.FileReader;
+
 public class Day16 {
 
     @FunctionalInterface
@@ -76,11 +78,11 @@ public class Day16 {
 
         int[] results = new int[4];
 
-        int i=0;
+        int i = 0;
         Pattern p = Pattern.compile("\\d+");
         Matcher m = p.matcher(line);
 
-        while(m.find()) {
+        while (m.find()) {
             results[i++] = Integer.parseInt(m.group());
         }
 
@@ -94,10 +96,10 @@ public class Day16 {
 
         Iterator<String> it = input.iterator();
 
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             String line = it.next();
 
-            if(line.trim().isEmpty()) {
+            if (line.trim().isEmpty()) {
                 continue;
             }
 
@@ -105,23 +107,22 @@ public class Day16 {
             int[] in = parseLine(it.next());
             int[] after = parseLine(it.next());
 
-
             int matching = 0;
             Instruction found = null;
             int opcode = -1;
-            for(Instruction instruction : unknownInstructions) {
+            for (Instruction instruction : unknownInstructions) {
 
                 int[] res = Arrays.copyOf(before, 4);
                 instruction.doit(res, in[1], in[2], in[3]);
 
-                if(Arrays.equals(after, res)) {
+                if (Arrays.equals(after, res)) {
                     matching++;
                     found = instruction;
                     opcode = in[0];
                 }
             }
 
-            if(matching == 1) {
+            if (matching == 1) {
                 knownInstructions.put(opcode, found);
                 unknownInstructions.remove(found);
             }
@@ -133,10 +134,10 @@ public class Day16 {
 
         int[] reg = new int[4];
         System.err.println(Arrays.toString(reg));
-        for(String line : code) {
+        for (String line : code) {
             int[] instr = parseLine(line);
-             knownInstructions.get(instr[0]).doit(reg, instr[1], instr[2], instr[3]);
-             System.err.println(Arrays.toString(reg));
+            knownInstructions.get(instr[0]).doit(reg, instr[1], instr[2], instr[3]);
+            System.err.println(Arrays.toString(reg));
         }
 
     }

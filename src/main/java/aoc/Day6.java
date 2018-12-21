@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import aoc.Utils.FileReader;
+
 public class Day6 {
     static Point[][] grid;
     static List<Point> pointList = new ArrayList<>();

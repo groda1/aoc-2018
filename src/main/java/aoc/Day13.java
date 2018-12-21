@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import aoc.Utils.FileReader;
+
 public class Day13 {
 
     enum Direction {

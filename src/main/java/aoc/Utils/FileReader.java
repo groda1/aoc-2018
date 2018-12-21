@@ -1,4 +1,4 @@
-package aoc;
+package aoc.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

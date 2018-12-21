@@ -12,6 +12,9 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import aoc.Utils.FileReader;
+import aoc.Utils.Point;
+
 public class Day15 {
     private static final char WALL = '#';
     private static final char GROUND = '.';
@@ -120,77 +123,6 @@ public class Day15 {
         }
     }
 
-    private static class Point {
-        int x;
-        int y;
-
-        Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        int readingOrder() {
-            return y * map.length + x;
-        }
-
-        Point left() {
-            return new Point(x - 1, y);
-        }
-
-        Point right() {
-            return new Point(x + 1, y);
-        }
-
-        Point up() {
-            return new Point(x, y - 1);
-        }
-
-        Point down() {
-            return new Point(x, y + 1);
-        }
-
-        List<Point> adjacent() {
-            List<Point> list = new ArrayList<>(4);
-            Point w = new Point(x - 1, y);
-            Point e = new Point(x + 1, y);
-            Point n = new Point(x, y - 1);
-            Point s = new Point(x, y + 1);
-
-            list.add(w);
-            list.add(e);
-            list.add(n);
-            list.add(s);
-
-            return list;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-
-            Point point = (Point)o;
-
-            if (x != point.x)
-                return false;
-            return y == point.y;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + y;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + x + ", " + y;
-        }
-    }
-
     private static Unit unitAtPoint(int x, int y) {
         Optional<Unit> unit =
             units.stream().filter(u -> u.p.x == x && u.p.y == y).findFirst();
@@ -219,7 +151,7 @@ public class Day15 {
             }
 
             units.stream().filter(u -> u.p.y == finalY)
-                .sorted(Comparator.comparing(u -> u.p.readingOrder())).forEach(u -> {
+                .sorted(Comparator.comparing(u -> u.p.readingOrder(width))).forEach(u -> {
                 System.err.print(String.format(" (%c %d)", u.type.val, u.hp));
             });
 
@@ -243,7 +175,7 @@ public class Day15 {
 
     private static boolean tick() {
         List<Unit> orderedUnits =
-            units.stream().sorted(Comparator.comparing(u -> u.p.readingOrder()))
+            units.stream().sorted(Comparator.comparing(u -> u.p.readingOrder(width)))
                 .collect(Collectors.toList());
         int i = 0;
         for (Unit unit : orderedUnits) {
@@ -272,7 +204,7 @@ public class Day15 {
                     if (min < Integer.MAX_VALUE) {
                         Point chosenTarget =
                             targets.stream().filter(target -> distance(unit.p, target) == min)
-                                .sorted(Comparator.comparing(p -> p.readingOrder())).findFirst()
+                                .sorted(Comparator.comparing(p -> p.readingOrder(width))).findFirst()
                                 .get();
 
                         Map<Point, Integer> distanceMap = distanceSearch(unit.p, chosenTarget);
@@ -283,7 +215,7 @@ public class Day15 {
                             Point p =
                                 distanceMap.entrySet().stream()
                                     .filter(e -> e.getValue().equals(minDist))
-                                    .sorted(Comparator.comparing(e -> e.getKey().readingOrder()))
+                                    .sorted(Comparator.comparing(e -> e.getKey().readingOrder(width)))
                                     .findFirst().get()
                                     .getKey();
 
@@ -301,7 +233,7 @@ public class Day15 {
             if(minEnemyHp.isPresent()) {
                 Unit enemy =
                     adjacentEnemies(unit).stream().filter(u -> u.hp == minEnemyHp.getAsInt())
-                        .min(Comparator.comparing(u -> u.p.readingOrder())).get();
+                        .min(Comparator.comparing(u -> u.p.readingOrder(width))).get();
                 enemy.hit();
                 if (enemy.hp <= 0) {
                     boolean b = units.remove(enemy);
