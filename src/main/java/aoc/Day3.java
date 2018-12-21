@@ -9,37 +9,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import aoc.Utils.FileReader;
+import aoc.Utils.Point;
 
 public class Day3 {
 
     final static String regex = "^#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)";
     final static Pattern pattern = Pattern.compile(regex);
-
-    static class Point {
-        int x;
-        int y;
-
-        public Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-            Point point = (Point)o;
-            return x == point.x &&
-                y == point.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
-    }
 
     static class Claim {
         int id;
@@ -89,7 +64,7 @@ public class Day3 {
 
     public static void main(String[] args) {
         Map<Point, List<Integer>> map = new HashMap<>();
-        List<String> lol = FileReader.readAsString("src/main/resources/day3.txt");
+        List<String> lol = FileReader.readAsString("aoc/src/main/resources/day3.txt");
 
         List<Claim> claimList = new ArrayList<>();
         lol.forEach(s -> lol(s, map, claimList));
